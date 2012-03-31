@@ -68,4 +68,17 @@ sub BUILD {
     }
 }
 
+sub length {
+    my $self = shift;
+
+    return @{$self->tokens} - 1;
+}
+
+sub token {
+    my $self = shift;
+    my ($i) = @_;
+
+    return $self->tokens->[$i];
+}
+
 1;

@@ -17,7 +17,7 @@ has form     => (is => 'ro');
 has lemma    => (is => 'ro');
 has cpostag  => (is => 'ro');
 has postag   => (is => 'ro');
-has feats    => (is => 'ro');
+has feats    => (is => 'ro', writer => '_feats');
 has head     => (is => 'ro', writer => '_head');
 has deprel   => (is => 'ro');
 has phead    => (is => 'ro');
@@ -32,7 +32,7 @@ sub BUILD {
     }
 
     if($self->feats) {
-        $self->feats([split m/\|/msx, $self->feats])
+        $self->_feats([split m/\|/msx, $self->feats])
     }
 }
 

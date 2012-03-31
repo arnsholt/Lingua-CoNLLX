@@ -65,4 +65,10 @@ sub sentence {
     return $self->sentences->[$_[0]];
 }
 
+sub size {
+    my $self = shift;
+
+    return scalar @{$self->sentences};
+}
+
 1;
