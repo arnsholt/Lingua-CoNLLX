@@ -29,7 +29,6 @@ for my $system_file (@system) {
 my $maxlen = max map {length $_} @system, $gold_file;
 
 # Print header:
-#                   | 100.00% | 100.00% | 100.00%
 printf "%-${maxlen}s |   UAS  |   LAS  | Labels\n", $gold_file;
 say '-'x$maxlen,   '-+--------+--------+--------';
 for my $file (@system) {
@@ -97,7 +96,7 @@ sub evaluate {
 
 sub usage {
     my %args = @_;
-    say STDERR "Usage: $0 -g GOLD -s SYSTEM [-s SYSTEM ...]";
+    say STDERR "Usage: $0 -g GOLD -s SYSTEM [SYSTEM...]";
 
     exit($args{die}) if exists $args{die};
 }
