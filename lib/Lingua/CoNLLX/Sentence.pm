@@ -49,10 +49,8 @@ sub BUILD {
     if($broken) {
         # Remove lacunae in the token list and renumber the tokens.
         $tokens = [grep {defined $_} @$tokens];
-        for my $i (0..$#$tokens) {
-            $tokens->[$i]->_id($i);
-        }
         $self->_tokens($tokens);
+        $self->_renumber;
     }
 
     # FIXME: This will leak memory! Since this results in a circular data
@@ -79,6 +77,26 @@ sub token {
     my ($i) = @_;
 
     return $self->tokens->[$i];
+}
+
+sub add_token {
+    my $self = shift;
+    my ($token, $position) = @_;
+
+    my @tail = splice @{$self->tokens}, $position;
+    push @{$self->tokens}, $token, @tail;
+    $self->_renumber;
+
+    $token->_head($self->token($token->head));
+}
+
+sub _renumber {
+    my $self = shift;
+
+    my $tokens = $self->tokens;
+    for my $i (0..$#$tokens) {
+        $tokens->[$i]->_id($i);
+    }
 }
 
 1;

@@ -6,7 +6,7 @@ use open      qw(:std :utf8);
 use charnames qw(:full :short);
 
 use Data::Dumper;
-use Test::More tests => 103;
+use Test::More tests => 105;
 
 use Lingua::CoNLLX;
 
@@ -96,3 +96,11 @@ is_deeply([map {$_->id} @{$tokens->[0]->children}], $children[0], 'root child li
 my $comments = $corpus->sentence(1)->comments;
 is(scalar @$comments, 1, 'no. of comments');
 is($comments->[0], 'Test', 'comment contents');
+
+# Adding tokens:
+my $new_token = Lingua::CoNLLX::Token::from_array(qw/1 form lemma cpos pos _ 2 REL 0 _/);
+my $sentence = $corpus->sentence(1);
+$sentence->add_token($new_token, 3);
+$tokens = $sentence->tokens;
+is(scalar @$tokens, 6, 'number of tokens after add');
+is($tokens->[3]->head->id, 2, 'head of new token');
