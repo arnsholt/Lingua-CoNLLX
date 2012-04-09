@@ -6,7 +6,7 @@ use open      qw(:std :utf8);
 use charnames qw(:full :short);
 
 use Data::Dumper;
-use Test::More tests => 105;
+use Test::More tests => 106;
 
 use Lingua::CoNLLX;
 
@@ -104,3 +104,5 @@ $sentence->add_token($new_token, 3);
 $tokens = $sentence->tokens;
 is(scalar @$tokens, 6, 'number of tokens after add');
 is($tokens->[3]->head->id, 2, 'head of new token');
+#is(scalar @{$tokens->[2]->children}, 3, 'no. of children of token #2 after add');
+is_deeply([map {$_->id} @{$tokens->[2]->children}], [1, 3, 5], 'child list #2 after add');

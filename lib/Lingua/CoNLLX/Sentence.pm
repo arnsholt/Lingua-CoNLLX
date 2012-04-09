@@ -88,6 +88,7 @@ sub add_token {
     $self->_renumber;
 
     $token->_head($self->token($token->head));
+    $token->head->_add_child($token, resort => 1);
 }
 
 sub _renumber {

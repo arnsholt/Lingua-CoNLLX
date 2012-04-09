@@ -22,7 +22,7 @@ has head     => (is => 'ro', writer => '_head');
 has deprel   => (is => 'ro');
 has phead    => (is => 'ro');
 has pdeprel  => (is => 'ro');
-has children => (is => 'ro', default => sub { [] });
+has children => (is => 'ro', writer => '_children', default => sub { [] });
 
 sub BUILD {
     my $self = shift;
@@ -42,9 +42,10 @@ sub from_array {
 
 sub _add_child {
     my $self = shift;
-    my ($child) = @_;
+    my ($child, %args) = @_;
 
     push @{$self->children}, $child;
+    $self->_children([sort {$a->id <=> $b->id} @{$self->children}]) if $args{resort};
 }
 
 1;
