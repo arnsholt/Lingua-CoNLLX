@@ -7,6 +7,7 @@ use warnings  qw(FATAL utf8);
 use open      qw(:std :utf8);
 use charnames qw(:full :short);
 
+use overload q{""} => 'to_string';
 use Moo;
 
 has tokens => (is => 'ro', writer => '_tokens');
@@ -89,6 +90,15 @@ sub add_token {
 
     $token->_head($self->token($token->head));
     $token->head->_add_child($token, resort => 1);
+}
+
+sub to_string {
+    my $self = shift;
+
+    my @lines = (map({"# $_"} @{$self->comments}),
+                 map({"$_"} @{$self->tokens}[1..$self->length]));
+
+    return join "\n", @lines;
 }
 
 sub _renumber {

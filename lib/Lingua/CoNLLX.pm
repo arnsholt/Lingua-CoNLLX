@@ -8,6 +8,7 @@ use warnings  qw(FATAL utf8);
 use open      qw(:std :utf8);
 use charnames qw(:full :short);
 
+use overload q{""} => 'to_string';
 use Moo;
 
 use Lingua::CoNLLX::Token;
@@ -70,6 +71,12 @@ sub size {
     my $self = shift;
 
     return scalar @{$self->sentences};
+}
+
+sub to_string {
+    my $self = shift;
+
+    join "\n\n", map {"$_"} @{$self->sentences};
 }
 
 1;

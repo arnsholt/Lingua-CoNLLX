@@ -7,6 +7,7 @@ use warnings  qw(FATAL utf8);
 use open      qw(:std :utf8);
 use charnames qw(:full :short);
 
+use overload q{""} => 'to_string';
 use List::MoreUtils qw/zip/;
 use Moo;
 
@@ -38,6 +39,20 @@ sub BUILD {
 
 sub from_array {
     __PACKAGE__->new(zip @fields, @_);
+}
+
+sub to_string {
+    my $self = shift;
+
+    my @data = ();
+    for my $field (@fields) {
+        my $val = $self->$field;
+        $val = $val->id if defined $val and $field eq 'head';
+        $val = '_' if not defined $val;
+        push @data, $val;
+    }
+
+    return join "\t", @data;
 }
 
 sub _add_child {
