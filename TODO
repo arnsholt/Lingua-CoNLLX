@@ -1,0 +1,5 @@
+Things TODO:
+============
+- Tests for stringification
+- Tests for applications. Probably best done by refactoring apps into modules
+  and testing those, letting script files be thin wrappers 'round the module.
