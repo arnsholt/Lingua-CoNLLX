@@ -1,4 +1,5 @@
 package Lingua::CoNLLX;
+# ABSTRACT: Manipulate CoNLLX corpora
 
 use utf8;
 use v5.12;
