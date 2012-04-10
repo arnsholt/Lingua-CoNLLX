@@ -8,6 +8,7 @@ use open      qw(:std :utf8);
 use charnames qw(:full :short);
 
 use overload q{""} => 'to_string';
+use Carp;
 use Moo;
 
 has tokens => (is => 'ro', writer => '_tokens');
@@ -107,6 +108,19 @@ sub _renumber {
     my $tokens = $self->tokens;
     for my $i (0..$#$tokens) {
         $tokens->[$i]->_id($i);
+    }
+}
+
+sub traverse {
+    my $self = shift;
+    my ($sub, %args) = @_;
+    $args{order} = 'prefix' if not exists $args{order}; # XXX: What's a good default order?
+
+    my $root = $self->token(0);
+    given($args{order}) {
+        when('prefix')  { return $root->_prefix(@_); }
+        when('postfix') { return $root->_postfix(@_); }
+        default { croak "Unknown traversal order $args{order}"; }
     }
 }
 

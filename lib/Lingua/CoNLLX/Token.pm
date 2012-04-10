@@ -63,4 +63,37 @@ sub _add_child {
     $self->_children([sort {$a->id <=> $b->id} @{$self->children}]) if $args{resort};
 }
 
+sub _prefix {
+    my $self = shift;
+    my ($sub, %args) = @_;
+
+    local $_ = $self;
+    $sub->($self, $args{data});
+    for my $child (@{$self->children}) {
+        $child->_prefix(@_);
+    }
+}
+
+# XXX: Infix order isn't obviously defined for a general n-ary tree.
+#sub _infix {
+#    my $self = shift;
+#    my ($sub, %args) = @_;
+#
+#    $sub->($self, $args{data});
+#    for my $child (@{$self->children}) {
+#        $child->_infix(@_);
+#    }
+#}
+
+sub _postfix {
+    my $self = shift;
+    my ($sub, %args) = @_;
+
+    for my $child (@{$self->children}) {
+        $child->_postfix(@_);
+    }
+    local $_ = $self;
+    $sub->($self, $args{data});
+}
+
 1;
