@@ -6,14 +6,14 @@ use open      qw(:std :utf8);
 use charnames qw(:full :short);
 
 use Data::Dumper;
-use Test::More tests => 106;
+use Test::More tests => 108;
 
 use Lingua::CoNLLX;
 
-# TODO
 my $corpus = Lingua::CoNLLX->new(file => 't/test.conll');
 ok(1, 'reading corpus');
 
+# First, make sure the dependency graphs are correct.
 my $tokens = $corpus->sentence(0)->tokens;
 is(scalar @$tokens, 45, 'number of tokens');
 
@@ -93,9 +93,15 @@ for my $i (1..4) {
 }
 is_deeply([map {$_->id} @{$tokens->[0]->children}], $children[0], 'root child list');
 
-my $comments = $corpus->sentence(1)->comments;
+# Second, make sure comments work.
+my $comments;
+$comments = $corpus->sentence(0)->comments;
 is(scalar @$comments, 1, 'no. of comments');
-is($comments->[0], 'Test', 'comment contents');
+is($comments->[0], 'Foo', 'comment #1 contents');
+
+$comments = $corpus->sentence(1)->comments;
+is(scalar @$comments, 1, 'no. of comments');
+is($comments->[0], 'Test', 'comment #2 contents');
 
 # Adding tokens:
 my $new_token = Lingua::CoNLLX::Token::from_array(qw/1 form lemma cpos pos _ 2 REL 0 _/);
@@ -104,5 +110,4 @@ $sentence->add_token($new_token, 3);
 $tokens = $sentence->tokens;
 is(scalar @$tokens, 6, 'number of tokens after add');
 is($tokens->[3]->head->id, 2, 'head of new token');
-#is(scalar @{$tokens->[2]->children}, 3, 'no. of children of token #2 after add');
 is_deeply([map {$_->id} @{$tokens->[2]->children}], [1, 3, 5], 'child list #2 after add');

@@ -32,20 +32,20 @@ sub _read_corpus {
 
     my @lines = ();
     my @sentences = ();
-    my @comments = ();
+    my $comments = [];
     while(my $line = <$file>) {
         $line =~ s/\A\s+ | \s+\z//msxg; # Trim leading and trailing whitespace
         #my $blank = (not $line or $line =~ m/\A\#/msx);
         my $comment = $line =~ m/\A\#\s* (.*) \z/msxo;
-        push @comments, $1 if $comment and length $1 > 0;
+        push @$comments, $1 if $comment and length $1 > 0;
         my $blank = (not $line or $comment);
         next if $blank and not @lines; # More than one blank line between sentences
         if($blank) {
             my @tokens = map {Lingua::CoNLLX::Token::from_array(@$_)} @lines;
             push @sentences, Lingua::CoNLLX::Sentence->new(tokens => \@tokens,
-                                                           comments => \@comments,);
+                                                           comments => $comments,);
             @lines = ();
-            @comments = ();
+            $comments = [];
             next;
         }
 
@@ -55,7 +55,7 @@ sub _read_corpus {
     if(@lines) {
         my @tokens = map {Lingua::CoNLLX::Token::from_array(@$_)} @lines;
         push @sentences, Lingua::CoNLLX::Sentence->new(tokens => \@tokens,
-                                                       comments => \@comments,);
+                                                       comments => $comments,);
     }
 
     $self->_sentences(\@sentences);
