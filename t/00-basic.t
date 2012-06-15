@@ -6,7 +6,7 @@ use open      qw(:std :utf8);
 use charnames qw(:full :short);
 
 use Data::Dumper;
-use Test::More tests => 108;
+use Test::More tests => 112;
 
 use Lingua::CoNLLX;
 
@@ -111,3 +111,15 @@ $tokens = $sentence->tokens;
 is(scalar @$tokens, 6, 'number of tokens after add');
 is($tokens->[3]->head->id, 2, 'head of new token');
 is_deeply([map {$_->id} @{$tokens->[2]->children}], [1, 3, 5], 'child list #2 after add');
+
+# Deleting tokens, both by passing object and id.
+$sentence->delete_token($new_token);
+is_deeply([map {$_->id} @{$sentence->tokens}], [qw/0 1 2 3 4/], 'deleting token (passed object)');
+is($sentence->token(3)->form, 'en', 'form of 3rd token after delete');
+
+# XXX: Can't recycle the object in $new_token. Not sure why.
+$new_token = Lingua::CoNLLX::Token::from_array(qw/1 form lemma cpos pos _ 2 REL 0 _/);
+$sentence->add_token($new_token, 3);
+$sentence->delete_token(3);
+is_deeply([map {$_->id} @{$sentence->tokens}], [qw/0 1 2 3 4/], 'deleting token (passed id)');
+is($sentence->token(3)->form, 'en', 'form of 3rd token after delete');

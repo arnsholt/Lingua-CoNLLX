@@ -14,15 +14,15 @@ use Moo;
 my @fields = qw/id form lemma cpostag postag feats head deprel phead pdeprel/;
 
 has id       => (is => 'ro', writer => '_id');
-has form     => (is => 'ro');
-has lemma    => (is => 'ro');
-has cpostag  => (is => 'ro');
-has postag   => (is => 'ro');
-has feats    => (is => 'ro', writer => '_feats');
-has head     => (is => 'ro', writer => '_head');
-has deprel   => (is => 'ro');
-has phead    => (is => 'ro');
-has pdeprel  => (is => 'ro');
+has form     => (is => 'rw');
+has lemma    => (is => 'rw');
+has cpostag  => (is => 'rw');
+has postag   => (is => 'rw');
+has feats    => (is => 'rw');
+has head     => (is => 'rw');
+has deprel   => (is => 'rw');
+has phead    => (is => 'rw');
+has pdeprel  => (is => 'rw');
 has children => (is => 'ro', writer => '_children', default => sub { [] });
 
 sub BUILD {
@@ -33,7 +33,7 @@ sub BUILD {
     }
 
     if($self->feats) {
-        $self->_feats([split m/\|/msx, $self->feats])
+        $self->feats([split m/\|/msx, $self->feats])
     }
 }
 
@@ -61,6 +61,12 @@ sub _add_child {
 
     push @{$self->children}, $child;
     $self->_children([sort {$a->id <=> $b->id} @{$self->children}]) if $args{resort};
+}
+
+sub _delete_child {
+    my $self = shift;
+    my ($child) = @_;
+    $self->_children([grep {$_->id != $child->id} @{$self->children}]);
 }
 
 sub _prefix {

@@ -45,7 +45,7 @@ sub BUILD {
     for my $token (@{$tokens}[1..$#$tokens]) {
         next if not defined $token;
         my $head = $token->head;
-        $token->_head($tokens->[$head]);
+        $token->head($tokens->[$head]);
     }
 
     if($broken) {
@@ -89,8 +89,27 @@ sub add_token {
     push @{$self->tokens}, $token, @tail;
     $self->_renumber;
 
-    $token->_head($self->token($token->head));
+    $token->head($self->token($token->head));
     $token->head->_add_child($token, resort => 1);
+}
+
+sub delete_token {
+    my $self = shift;
+    my ($t, %args) = @_;
+
+    $t = $self->token($t) if not ref $t;
+    my $id = $t->id;
+    if(scalar @{$t->children} and $args{recursive}) {
+        croak "Recursive delete_token not yet implemented"
+    }
+    elsif(scalar @{$t->children}) {
+        croak "Token $id has children";
+    }
+
+    my $head = $t->head;
+    splice @{$self->tokens}, $id, 1; # In-place modification of token array.
+    $head->_delete_child($t);
+    $self->_renumber;
 }
 
 sub to_string {
