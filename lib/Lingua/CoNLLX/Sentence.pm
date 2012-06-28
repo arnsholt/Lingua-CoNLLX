@@ -13,6 +13,7 @@ use Moo;
 
 has tokens => (is => 'ro', writer => '_tokens');
 has comments => (is => 'ro',);
+has start => (is => 'ro',);
 #has root_children => (is => 'ro', default => sub { [] });
 
 sub BUILD {

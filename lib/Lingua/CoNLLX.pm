@@ -32,30 +32,38 @@ sub _read_corpus {
 
     my @lines = ();
     my @sentences = ();
+    # This next one can't be @comments. If it were, all sentences in the
+    # corpus would share the comment of the last sentence in the corpus.
     my $comments = [];
+    my $start;
     while(my $line = <$file>) {
         $line =~ s/\A\s+ | \s+\z//msxg; # Trim leading and trailing whitespace
-        #my $blank = (not $line or $line =~ m/\A\#/msx);
+
         my $comment = $line =~ m/\A\#\s* (.*) \z/msxo;
         push @$comments, $1 if $comment and length $1 > 0;
         my $blank = (not $line or $comment);
         next if $blank and not @lines; # More than one blank line between sentences
+
         if($blank) {
             my @tokens = map {Lingua::CoNLLX::Token::from_array(@$_)} @lines;
-            push @sentences, Lingua::CoNLLX::Sentence->new(tokens => \@tokens,
-                                                           comments => $comments,);
+            push @sentences, Lingua::CoNLLX::Sentence->new(tokens   => \@tokens,
+                                                           comments => $comments,
+                                                           start    => $start,);
             @lines = ();
             $comments = [];
             next;
         }
 
+        # Record line number of first token in a sentence.
+        $start = $. if not @lines;
         push @lines, [split m/\s+/, $line];
     }
 
     if(@lines) {
         my @tokens = map {Lingua::CoNLLX::Token::from_array(@$_)} @lines;
-        push @sentences, Lingua::CoNLLX::Sentence->new(tokens => \@tokens,
-                                                       comments => $comments,);
+        push @sentences, Lingua::CoNLLX::Sentence->new(tokens   => \@tokens,
+                                                       comments => $comments,
+                                                       start    => $start,);
     }
 
     $self->_sentences(\@sentences);

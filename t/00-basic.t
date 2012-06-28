@@ -6,7 +6,7 @@ use open      qw(:std :utf8);
 use charnames qw(:full :short);
 
 use Data::Dumper;
-use Test::More tests => 112;
+use Test::More tests => 114;
 
 use Lingua::CoNLLX;
 
@@ -76,6 +76,7 @@ for my $i (1..44) {
     is_deeply([map {$_->id} @{$t->children}], $children[$i], "child list #$i");
 }
 is_deeply([map {$_->id} @{$tokens->[0]->children}], $children[0], 'root child list');
+is($corpus->sentence(0)->start, 2, 'start of sentence #1');
 
 $tokens = $corpus->sentence(1)->tokens;
 is(scalar @$tokens, 5, 'number of tokens');
@@ -92,6 +93,7 @@ for my $i (1..4) {
     is_deeply([map {$_->id} @{$t->children}], $children[$i], "child list #$i");
 }
 is_deeply([map {$_->id} @{$tokens->[0]->children}], $children[0], 'root child list');
+is($corpus->sentence(1)->start, 48, 'start of sentence #2');
 
 # Second, make sure comments work.
 my $comments;
