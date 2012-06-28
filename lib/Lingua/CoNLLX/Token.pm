@@ -47,8 +47,9 @@ sub to_string {
     my @data = ();
     for my $field (@fields) {
         my $val = $self->$field;
-        $val = $val->id if defined $val and $field eq 'head';
-        $val = '_' if not defined $val;
+        $val = $val->id        if defined $val and $field eq 'head';
+        $val = join '|', @$val if defined $val and $field eq 'feats';
+        $val = '_'             if not defined $val;
         push @data, $val;
     }
 
