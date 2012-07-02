@@ -5,7 +5,7 @@ use warnings  qw(FATAL utf8);
 use open      qw(:std :utf8);
 use charnames qw(:full :short);
 
-use Test::More tests => 2;
+use Test::More tests => 3;
 
 use Lingua::CoNLLX;
 
@@ -25,3 +25,7 @@ is_deeply(\@traversed, $prefix, 'prefix traversal');
 @traversed = ();
 $corpus->sentence(0)->traverse(sub { push @traversed, $_->id }, order => 'postfix');
 is_deeply(\@traversed, $postfix, 'postfix traversal');
+
+@traversed = ();
+$corpus->sentence(0)->iterate(sub { push @traversed, $_->id });
+is_deeply(\@traversed, [1..44], 'sequential iteration');

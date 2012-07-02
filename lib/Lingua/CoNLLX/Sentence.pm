@@ -131,6 +131,16 @@ sub _renumber {
     }
 }
 
+sub iterate {
+    my $self = shift;
+    my ($sub) = @_;
+
+    for my $t (@{$self->tokens}[1..$self->length]) {
+        local $_ = $t;
+        $sub->($t);
+    }
+}
+
 sub traverse {
     my $self = shift;
     my ($sub, %args) = @_;
