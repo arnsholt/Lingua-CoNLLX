@@ -27,6 +27,10 @@ for my $file (@ARGV) {
     $stats{$file} = stats(@sentence_length);
 }
 
+my $n = sum map {$_->{n}} values %stats;
+my $toks = sum map{$_->{sum}} values %stats;
+say "Total: $n sentences, $toks tokens";
+
 my $maxlen = max map {length $_} @ARGV;
 my $maxn   = max map {length "$_"} map {$stats{$_}{n}} keys %stats;
 printf "%${maxlen}s | %${maxn}s | mean  | sigma\n", '', 'n';
@@ -66,6 +70,7 @@ sub stats {
     my $ss = $squares - $sum*$sum/$n;
     my $var = $ss/($n-1);
     return {n      => $n,
+            sum    => $sum,
             df     => $n - 1,
             mean   => $mean,
             stddev => sqrt($var),
